@@ -29,6 +29,11 @@ SD_MIN_LON = -117.60
 SD_MAX_LON = -116.08
 
 
+@app.route("/healthz")
+def healthz():
+    return {"status": "ok"}, 200
+
+
 def clean_type_label(raw_type):
     if not raw_type:
         return "Unknown"
