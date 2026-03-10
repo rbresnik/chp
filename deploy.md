@@ -36,3 +36,13 @@ pip install -r requirements.txt
 $env:OPENAI_API_KEY="your_key_here"
 python app.py
 ```
+
+## Render settings (recommended)
+
+- Build Command: `pip install -r requirements.txt`
+- Start Command: `gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 app:app`
+- Env vars:
+  - `OPENAI_API_KEY=<your_key>`
+  - `WEB_CONCURRENCY=2`
+
+`render.yaml` in this repo contains the same defaults.
