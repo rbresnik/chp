@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Border Communications Center</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  >
+  <style>
+    :root {
+      --red: #b30000;
+      --red-dark: #7a0000;
+      --green: #0b7a2f;
+      --green-dark: #065c23;
+      --black: #111111;
+      --gray: #f5f5f5;
+      --border: #d0d0d0;
+      --white: #ffffff;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--black);
+      background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+      margin: 0;
+      padding: 20px 12px 28px;
+      font-size: 1.06rem;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 6px;
+      color: var(--red);
+      font-size: clamp(1.35rem, 2.2vw, 2rem);
+    }
+    .incident-line {
+      margin: 0;
+      font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+      line-height: 1.2;
+      font-weight: 800;
+      color: var(--black);
+    }
+    .incident-line + .incident-line {
+      margin-top: 4px;
+    }
+    .meta {
+      margin: 0 0 18px;
+      font-weight: 600;
+      font-size: 1.02rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--white);
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 1.02rem;
+    }
+    tbody tr + tr td {
+      border-top: 2px solid var(--red);
+    }
+    th {
+      background: var(--black);
+      color: var(--white);
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) td {
+      background: var(--gray);
+    }
+    .group-row td {
+      background: var(--black) !important;
+      color: var(--white);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid var(--red);
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+    .details-btn {
+      display: inline-block;
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      min-height: 40px;
+    }
+    .details-btn-traffic {
+      background: var(--red);
+      border: 1px solid var(--red-dark);
+    }
+    .details-btn-traffic:hover {
+      background: var(--red-dark);
+    }
+    .details-btn-other {
+      background: var(--green);
+      border: 1px solid var(--green-dark);
+    }
+    .details-btn-other:hover {
+      background: var(--green-dark);
+    }
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(17, 17, 17, 0.32);
+      z-index: 9999;
+    }
+    body.loading .loading-overlay {
+      display: flex;
+    }
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: #ffffff;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+    .loading-spinner {
+      width: 36px;
+      height: 36px;
+      border: 4px solid rgba(255, 255, 255, 0.45);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .map-wrap {
+      margin-top: 16px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .map-title {
+      margin: 0;
+      padding: 10px 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--white);
+      background: var(--black);
+    }
+    #incidents-map {
+      width: 100%;
+      height: 540px;
+    }
+    .map-empty {
+      padding: 12px;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .popup-btn {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .leaflet-popup-content .popup-btn,
+    .leaflet-popup-content .popup-btn:visited,
+    .leaflet-popup-content .popup-btn:hover,
+    .leaflet-popup-content .popup-btn:active {
+      color: #fff !important;
+      text-decoration: none;
+    }
+    .popup-btn-traffic {
+      background: var(--red);
+    }
+    .popup-btn-traffic:hover {
+      background: var(--red-dark);
+    }
+    .popup-btn-other {
+      background: var(--green);
+    }
+    .popup-btn-other:hover {
+      background: var(--green-dark);
+    }
+    @media (min-width: 761px) {
+      table {
+        border: 0;
+      }
+      th, td {
+        border: 0;
+      }
+      .map-wrap {
+        border: 0;
+      }
+      .details-btn {
+        border: 0;
+      }
+    }
+    @media (max-width: 760px) {
+      body {
+        padding: 14px 10px 22px;
+      }
+      table,
+      thead,
+      tbody,
+      tr,
+      th,
+      td {
+        display: block;
+      }
+      thead {
+        display: none;
+      }
+      tr {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding: 8px;
+        background: var(--white);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: column;
+      }
+      tbody tr + tr {
+        border-top: 0;
+      }
+      tbody tr + tr td {
+        border-top: 0;
+      }
+      td {
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        padding: 8px 6px;
+      }
+      td[data-label="Details"] {
+        border-top: 0;
+        border-bottom: 4px solid var(--red);
+        padding-top: 10px;
+        padding-bottom: 10px;
+        order: 99;
+      }
+      td:last-child {
+        border-bottom: 0;
+      }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #666;
+        margin-bottom: 3px;
+      }
+      td[data-label="Details"]::before {
+        display: none;
+      }
+      .group-row td::before {
+        display: none;
+      }
+      .details-btn {
+        width: 100%;
+        text-align: center;
+      }
+      #incidents-map {
+        height: 460px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CHP Traffic Information</h1>
+    <p class="meta">Number of Incidents: {{ count }}</p>
+
+    <section class="map-wrap">
+      <h2 class="map-title">Incident Map</h2>
+      {% if map_incidents %}
+      <div id="incidents-map"></div>
+      {% else %}
+      <p class="map-empty">No mappable incident coordinates found in the current feed.</p>
+      {% endif %}
+    </section>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Details</th>
+          <th>Location</th>
+          <th>Time</th>
+          <th>Area</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group-row">
+          <td colspan="4">Traffic collisions</td>
+        </tr>
+        {% for i in incidents %}
+        {% set incident_type_text = (i.type_display or i.type or "")|lower %}
+        {% if "traffic collision" in incident_type_text %}
+        <tr>
+          <td data-label="Details"><a class="details-btn {{ 'details-btn-traffic' if 'traffic collision' in incident_type_text else 'details-btn-other' }}" href="/incident/{{ i.id }}">Open Details</a></td>
+          <td data-label="Location">
+            <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
+            <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
+          </td>
+          <td data-label="Time">{{ i.time }}</td>
+          <td data-label="Area">{{ i.area }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        <tr class="group-row">
+          <td colspan="4">Others</td>
+        </tr>
+        {% for i in incidents %}
+        {% set incident_type_text = (i.type_display or i.type or "")|lower %}
+        {% if "traffic collision" not in incident_type_text %}
+        <tr>
+          <td data-label="Details"><a class="details-btn {{ 'details-btn-traffic' if 'traffic collision' in incident_type_text else 'details-btn-other' }}" href="/incident/{{ i.id }}">Open Details</a></td>
+          <td data-label="Location">
+            <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
+            <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
+          </td>
+          <td data-label="Time">{{ i.time }}</td>
+          <td data-label="Area">{{ i.area }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="loading-overlay" id="incident-loading-overlay" aria-hidden="true">
+    <div class="loading-indicator">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <div>Opening incident...</div>
+    </div>
+  </div>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script id="map-points-data" type="application/json">{{ map_incidents|tojson }}</script>
+  <script>
+    (function () {
+      const showLoading = () => {
+        document.body.classList.add("loading");
+      };
+
+      document.addEventListener("click", (event) => {
+        const link = event.target.closest("a");
+        if (!link) return;
+        if (!link.matches(".details-btn, .popup-btn")) return;
+        if (!link.getAttribute("href") || !link.getAttribute("href").startsWith("/incident/")) return;
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        showLoading();
+      });
+
+      window.addEventListener("pageshow", () => {
+        document.body.classList.remove("loading");
+      });
+
+      const pointsEl = document.getElementById("map-points-data");
+      const mapPoints = pointsEl ? JSON.parse(pointsEl.textContent || "[]") : [];
+      if (!mapPoints.length) return;
+
+      const mapEl = document.getElementById("incidents-map");
+      if (!mapEl) return;
+
+      const sanDiegoBounds = [
+        [32.53, -117.60],
+        [33.51, -116.08]
+      ];
+
+      const map = L.map(mapEl, {
+        scrollWheelZoom: true,
+        maxBounds: sanDiegoBounds,
+        maxBoundsViscosity: 1.0
+      });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        noWrap: true,
+        attribution: "&copy; OpenStreetMap contributors"
+      }).addTo(map);
+
+      map.setView([32.9, -117.1], 9);
+
+      mapPoints.forEach((p) => {
+        const incidentType = (p.type || "").toLowerCase();
+        const isTrafficCollision = incidentType.includes("traffic collision");
+        const markerColor = isTrafficCollision ? "#d40000" : "#0b7a2f";
+        const popupButtonClass = isTrafficCollision ? "popup-btn-traffic" : "popup-btn-other";
+        const ll = [p.lat, p.lon];
+        const popup = `
+          <strong>${p.location || "Unknown location"}</strong><br>
+          ${p.type || "Unknown"}<br>
+          ${p.time || "Unknown time"}<br>
+          <a class="popup-btn ${popupButtonClass}" href="/incident/${p.id}">Open Incident</a>
+        `;
+        const markerIcon = L.divIcon({
+          className: "incident-star-icon",
+          html: `<span style='display:block;width:12px;height:12px;border-radius:50%;background:${markerColor};border:1px solid #ffffff;box-shadow:0 0 0 1px rgba(0,0,0,0.35);'></span>`,
+          iconSize: [14, 14],
+          iconAnchor: [7, 7]
+        });
+        const marker = L.marker(ll, { icon: markerIcon }).addTo(map).bindPopup(
+          popup,
+          { closeButton: false, autoClose: true, closeOnClick: false }
+        );
+        let markerHovered = false;
+        let popupHovered = false;
+
+        const closeIfNotHovered = () => {
+          window.setTimeout(() => {
+            if (!markerHovered && !popupHovered) {
+              marker.closePopup();
+            }
+          }, 120);
+        };
+
+        marker.on("mouseover", () => {
+          markerHovered = true;
+          marker.openPopup();
+        });
+        marker.on("mouseout", () => {
+          markerHovered = false;
+          closeIfNotHovered();
+        });
+        marker.on("click", () => {
+          marker.openPopup();
+        });
+        marker.on("popupopen", (event) => {
+          const popupEl = event.popup.getElement();
+          if (!popupEl || popupEl.dataset.hoverBound === "true") return;
+          popupEl.dataset.hoverBound = "true";
+          popupEl.addEventListener("mouseenter", () => {
+            popupHovered = true;
+          });
+          popupEl.addEventListener("mouseleave", () => {
+            popupHovered = false;
+            closeIfNotHovered();
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
