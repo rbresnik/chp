@@ -1206,6 +1206,16 @@ def _chat_with_openai(prompt, api_key):
         return f"AI interpretation unavailable: {exc}"
 
 
+def _format_public_sentence(text):
+    cleaned = re.sub(r"\s+", " ", (text or "").strip())
+    if not cleaned:
+        return ""
+    cleaned = cleaned[0].upper() + cleaned[1:]
+    if cleaned[-1] not in ".!?":
+        cleaned += "."
+    return cleaned
+
+
 def interpret_incident(incident):
     if not incident:
         return "Incident not found."
@@ -1264,5 +1274,67 @@ def translate_timeline_details(details):
 
     if not translated:
         return translated
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return translated
+
+    numbered = []
+    for idx, d in enumerate(translated, start=1):
+        numbered.append(f"{idx}|||{d['text'] or 'No detail text'}")
+
+    prompt = f"""
+You are translating CHP CAD shorthand into plain English for the public.
+
+Translate every input line into one clear sentence.
+Keep the facts exact and grounded in the line. If something is uncertain, say it is unknown or unclear.
+Do not omit vehicle counts, lane positions, shoulders, center divider placement, or vehicle descriptions.
+Do not invent injuries, vehicle types, or causes.
+Do not output CHP codes or abbreviations in the final text.
+Do not skip, merge, or reorder lines.
+
+Useful CHP glossary for this task:
+- TC = traffic collision
+- VEH = vehicle, VEHS = vehicles
+- RHS = right shoulder
+- LHS = left shoulder
+- CD = center divider
+- HOV LN = HOV lane
+- RP = reporting party
+- INV = involved party / involved person
+- GRY = gray
+- NISS SEN = Nissan Sentra
+- MAZD SUV CX9 = Mazda CX-9 SUV
+- HRV = Honda HR-V
+- 1141 = medical aid / ambulance response
+- 1185 = tow truck requested
+- 1039 = notified / contacted / advised
+
+Return exactly one line per input in this format:
+index|||plain-English sentence
+
+INPUT:
+{chr(10).join(numbered)}
+"""
+
+    content = _chat_with_openai(prompt, api_key)
+    if not content or content.startswith("AI interpretation unavailable:"):
+        return translated
+
+    parsed = {}
+    for line in content.splitlines():
+        m = re.match(r"^\s*(\d+)\s*\|\|\|\s*(.+?)\s*$", line)
+        if not m:
+            continue
+        parsed[int(m.group(1))] = m.group(2).strip()
+
+    for idx, row in enumerate(translated, start=1):
+        candidate = parsed.get(idx, "")
+        if not candidate:
+            continue
+        candidate = _format_public_sentence(candidate)
+        if not candidate or _contains_dispatch_code(candidate):
+            continue
+        row["ai_text"] = candidate
 
     return translated

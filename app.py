@@ -46,6 +46,7 @@ def clean_type_label(raw_type):
 def index():
     incidents = get_border_incidents()
     map_incidents = []
+    ai_enabled = bool(os.getenv("OPENAI_API_KEY"))
     for incident in incidents:
         incident["type_display"] = clean_type_label(incident.get("type"))
         incident["feed_preview"] = local_summary(incident)
@@ -73,6 +74,7 @@ def index():
         incidents=incidents,
         count=len(incidents),
         map_incidents=map_incidents,
+        ai_enabled=ai_enabled,
     )
 
 
@@ -92,6 +94,7 @@ def build_feed_summary(incident):
 @app.route("/incident/<incident_id>")
 def incident_detail(incident_id):
     incidents = get_border_incidents()
+    ai_enabled = bool(os.getenv("OPENAI_API_KEY"))
 
     incident = next((i for i in incidents if i["id"] == incident_id), None)
     if incident is None:
@@ -114,6 +117,7 @@ def incident_detail(incident_id):
         incident=incident,
         readable=readable,
         timeline=timeline,
+        ai_enabled=ai_enabled,
     )
 
 

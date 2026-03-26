@@ -43,6 +43,25 @@
       text-shadow: none;
       line-height: 1.2;
     }
+    .status-pill {
+      display: inline-block;
+      margin: 0 0 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .status-pill-on {
+      background: #e8f6ed;
+      color: #116530;
+      border: 1px solid #9fd0af;
+    }
+    .status-pill-off {
+      background: #fff2f2;
+      color: #8b1e1e;
+      border: 1px solid #e1b0b0;
+    }
     h3 {
       margin: 14px 0 8px;
       font-size: 1.06rem;
@@ -140,6 +159,9 @@
   <h2>Incident {{ incident.id }}</h2>
   <h1>{{ incident.location or "Unknown location" }}</h1>
   <p class="incident-desc">{{ incident.type_display or incident.type or "Unknown" }}</p>
+  <div class="status-pill {{ 'status-pill-on' if ai_enabled else 'status-pill-off' }}">
+    {{ 'AI translation enabled' if ai_enabled else 'AI translation fallback mode' }}
+  </div>
 
   <h3>Summary</h3>
   <div class="summary">{{ readable }}</div>

@@ -63,6 +63,25 @@
       font-weight: 600;
       font-size: 1.02rem;
     }
+    .status-pill {
+      display: inline-block;
+      margin: 0 0 18px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .status-pill-on {
+      background: #e8f6ed;
+      color: #116530;
+      border: 1px solid #9fd0af;
+    }
+    .status-pill-off {
+      background: #fff2f2;
+      color: #8b1e1e;
+      border: 1px solid #e1b0b0;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -302,6 +321,9 @@
   <div class="container">
     <h1>CHP Traffic Information</h1>
     <p class="meta">Number of Incidents: {{ count }}</p>
+    <div class="status-pill {{ 'status-pill-on' if ai_enabled else 'status-pill-off' }}">
+      {{ 'AI translation enabled' if ai_enabled else 'AI translation fallback mode' }}
+    </div>
 
     <section class="map-wrap">
       <h2 class="map-title">Incident Map</h2>
