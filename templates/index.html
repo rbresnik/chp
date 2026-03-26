@@ -51,6 +51,13 @@
     .incident-line + .incident-line {
       margin-top: 4px;
     }
+    .incident-preview {
+      margin: 10px 0 0;
+      font-size: 0.97rem;
+      line-height: 1.5;
+      color: #303030;
+      max-width: 58ch;
+    }
     .meta {
       margin: 0 0 18px;
       font-weight: 600;
@@ -326,6 +333,7 @@
           <td data-label="Location">
             <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
             <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
+            <p class="incident-preview">{{ i.feed_preview }}</p>
           </td>
           <td data-label="Time">{{ i.time }}</td>
           <td data-label="Area">{{ i.area }}</td>
@@ -343,6 +351,7 @@
           <td data-label="Location">
             <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
             <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
+            <p class="incident-preview">{{ i.feed_preview }}</p>
           </td>
           <td data-label="Time">{{ i.time }}</td>
           <td data-label="Area">{{ i.area }}</td>

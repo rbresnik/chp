@@ -251,6 +251,19 @@ PHRASE_REPLACEMENTS = [
 
 
 TOKEN_REPLACEMENTS = {
+    r"\bRS\b": "right shoulder",
+    r"\bHBD\b": "possible DUI (driver may be intoxicated)",
+    r"\bPLOT\b": "parking lot",
+    r"\bLOT\b": "parking lot",
+    r"\bBLU\b": "blue",
+    r"\bBRONZE\b": "bronze",
+    r"\bDODG\b": "Dodge",
+    r"\bCAM\b": "Camaro",
+    r"\bCHAV\s*CAM\b": "Chevy Camaro",
+    r"\bSUBA\b": "Subaru",
+    r"\bSUB\b": "Subaru",
+    r"\bMC\b": "motorcycle",
+    r"\bETA\b": "estimated arrival in",
     r"\bJNO\b": "just north of",
     r"\bJSO\b": "just south of",
     r"\bJWO\b": "just west of",
@@ -267,6 +280,7 @@ TOKEN_REPLACEMENTS = {
     r"\bTRFC\b": "traffic",
     r"\bVEH\b": "vehicle",
     r"\bVEHS\b": "vehicles",
+    r"\bSOLO\b": "single",
     r"\bOTS\b": "off to the side",
     r"\bCON\b": "connector road",
     r"\bLN\b": "lane",
@@ -287,6 +301,7 @@ TOKEN_REPLACEMENTS = {
     r"\bPTY\b": "party",
     r"\bPRVT\b": "private",
     r"\bSANDR\b": "SandR Tow",
+    r"\bS\s*AND\s*R\b": "S and R Tow",
     r"\bBOT\b": "by-owner tow",
     r"\bATC\b": "attempted to contact",
     r"\bADV\b": "advise",
@@ -300,6 +315,7 @@ TOKEN_REPLACEMENTS = {
     r"\bPER\b": "according to",
     r"\bSDSO\b": "San Diego Sheriff's Office",
     r"\bSIL\b": "silver",
+    r"\bOUTBACK\b": "Outback",
     r"\bSD\b": "sedan",
     r"\bS\d+\b": "unit",
     r"\bC\d+[A-Z]?\b": "unit",
@@ -343,8 +359,21 @@ TOKEN_REPLACEMENTS = {
     r"\bRDWY\b": "roadway",
     r"\bFWY\b": "freeway",
     r"\bPLT\b": "plate",
+    r"\bUTL\b": "unable to locate",
+    r"\bSPUN\b": "spun",
+    r"\bFAST\b": "fast",
+    r"\bMINIVN\b": "minivan",
+    r"\bUTL\b": "unable to locate",
+    r"\bSPUN\b": "spun",
     r"\bCOPZ\b": "closure point",
     r"\bLMPD\b": "La Mesa Police Department",
+    r"\bGRN\b": "green",
+    r"\bNISS?\b": "Nissan",
+    r"\bROG\b": "Rogue",
+    r"\bUSA\b": "update says",
+    r"\bMCC\b": "medical command was contacted",
+    r"\bPOSS\b": "possible",
+    r"\bPLT\b": "license plate",
     r"\b10-97\b": "on scene",
     r"\bWITHSUSPECT\b": "with suspect",
     r"\bWALK\s+INS\b": "walk-in patients",
@@ -354,6 +383,17 @@ TOKEN_REPLACEMENTS = {
     r"\bINV\b": "involved",
     r"\bFRM\b": "from",
     r"\bFT\b": "feet",
+    r"\bCD\b": "center divider",
+    r"\bMID\b": "middle",
+    r"\bMAZD\b": "Mazda",
+    r"\bCX9\b": "CX-9",
+    r"\bSEN\b": "Sentra",
+    r"\bTK\b": "truck",
+    r"\bHRV\b": "HR-V",
+    r"\bSGT\b": "sergeant",
+    r"\bSTAM\b": "staff",
+    r"\bHOV\b": "HOV",
+    r"\bAIR\s+BAGS\b": "airbags",
 }
 
 
@@ -644,12 +684,81 @@ def _to_plain_english(text):
 
     raw_text = str(text)
     raw_compact = re.sub(r"\s+", " ", raw_text).strip()
+    raw_rules = [
+        (
+            re.compile(r"^MULTI\s+VEH\s+TC\s+BLKG\s+MID\s+LANES\s*-\s*NO\s+VEH\s+DESC$", re.IGNORECASE),
+            "A multi-vehicle traffic collision was reported blocking the middle lanes. No vehicle descriptions were available yet",
+        ),
+        (
+            re.compile(r"^\[?Appended,\s*[^\]]+\]?\s*\[?\d+\]?\s*3\s+VEH\s+TC\s*//\s*RED\s+UNK\s+PK\s+TK\s+ON\s+RHS\s+VS\s+GRY\s+NISS\s+SEN\s+VS\s+UNK\s+VEH$", re.IGNORECASE),
+            "A 3-vehicle crash was reported involving a red pickup truck on the right shoulder, a gray Nissan Sentra, and an unknown third vehicle",
+        ),
+        (
+            re.compile(r"^\[?Appended,\s*[^\]]+\]?\s*\[?\d+\]?\s*GRY\s+NISS\s+SEN\s+WAS\s+HIGH\s+SPEEDS\s+PRIOR\s+TO\s+TC$", re.IGNORECASE),
+            "The gray Nissan Sentra was reportedly speeding before the crash",
+        ),
+        (
+            re.compile(r"^\[?Appended,\s*[^\]]+\]?\s*\[?\d+\]?\s*2\s+VEH\s+1125\s+MIDDLE\s+LANE$", re.IGNORECASE),
+            "Two vehicles were reported in the middle lane",
+        ),
+        (
+            re.compile(r"^2\s+VEH\s+TC\s*/\s*ONE\s+IN\s+CD\s+AND\s+ONE\s+ON\s+RHS(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "A 2-vehicle crash was reported, with one vehicle in the center divider and the other on the right shoulder",
+        ),
+        (
+            re.compile(r"^1039\s+MCC\s*-\s*AIR\s+BAGS\s+FOR\s+VEH\s+ON\s+RHS(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "Medical command was contacted after airbags were reported deployed in the vehicle on the right shoulder",
+        ),
+        (
+            re.compile(r"^3\s+VEH\s+TC\s+POSSIBLY\s+MORE(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "At least 3 vehicles were reported involved, and possibly more",
+        ),
+        (
+            re.compile(r"^RP\s+IN\s+A\s+GRY\s+MAZD\s+SUV\s+CX9\s+ON\s+RHS\s+ANOTHER\s+VEH\s+ON\s+RHS\s+AND\s+3RD\s+VEH\s+IN\s+CD(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "The reporting party said they were in a gray Mazda CX-9 on the right shoulder, with another vehicle also on the right shoulder and a third in the center divider",
+        ),
+        (
+            re.compile(r"^INV\s+IN\s+MAZD\s+SUV\s+DECLINED\s+1141\s+UNK\s+IF\s+VEH\s+IS\s+DRIVEABLE\s*//\s*HAS\s+HAZARDS\s+ON(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "An involved person in the Mazda SUV declined medical help. It is unclear whether the vehicle can be driven, and its hazard lights are on",
+        ),
+        (
+            re.compile(r"^INV\s+IN\s+MAZD\s+ADV\s+BOTH\s+SIDES\s+OF\s+HER\s+VEH\s+WERE\s+HIT\s+UNK\s+WHAT\s+TYPES\s+OF\s+VEHS(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "The Mazda driver said both sides of her vehicle were hit, but she could not identify the other vehicles",
+        ),
+        (
+            re.compile(r"^\[CHP\]\s*-\s*OFF\s+DUTY\s+STAM\s+SGT\s+IN\s+GRY\s+TESLA\s*-\s*NOT\s+INV\s*/\s*GRY\s+HOND\s+HRV\s+IN\s+CD\s+BRO\s+4DR\s+SD\s+ON\s+RHS\s*//\s*RED\s+PK\s+TK\s+ON\s+RHS\s+UNK\s+IF\s+INV(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "An off-duty CHP sergeant in a gray Tesla was on scene but not involved. A gray Honda HR-V was in the center divider, a damaged 4-door sedan was on the right shoulder, and it was still unclear whether the red pickup truck on the shoulder was involved",
+        ),
+        (
+            re.compile(r"^\[CHP\]\s*-\s*Problem\s+changed\s+from\s+1183-?Trfc\s+Collision-?Unkn\s+Inj\s+to\s+1179-?Trfc\s+Collision-?1141\s+Enrt(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "The incident was updated from unknown injuries to units and medical help en route",
+        ),
+        (
+            re.compile(r"^A\d+-\d+\s+97\s+IN\s+THE\s+CD\s*,\s*FD\s+BLOCKING\s+THE\s+HOV\s+LN(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "A unit reported a vehicle in the center divider, and the Fire Department was blocking the HOV lane",
+        ),
+        (
+            re.compile(r"^\d+-\d+\s+START\s+1185(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "An officer started the tow request",
+        ),
+        (
+            re.compile(r"^\[Rotation\s+Request\s+Comment\]\s*\*\*\s*1039\s+PACIFIC\s+AUTOW\s+\d{3}-\d{3}-\d{4}(?:\s+\[Shared\])?$", re.IGNORECASE),
+            "Tow truck requested from Pacific Auto",
+        ),
+    ]
+    for pattern, replacement in raw_rules:
+        if pattern.match(raw_compact):
+            return replacement + "."
     if re.search(r"\b1039\s+\d{2,4}\s*-\s*51\b", raw_compact, re.IGNORECASE):
         return "Dispatch advised Unit 51."
     if re.search(r"^(?:\[?\d+\]?\s*)?51\.?(?:\s*\[.*\])?$", raw_compact, re.IGNORECASE):
         return "Unit 51."
     had_leading_index = bool(re.match(r"^\s*\[\d+\]", raw_text))
     cleaned = raw_text
+    cleaned = re.sub(r"\[(?:Shared|Notification|Rotation Request Comment)\]", " ", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\[CHP\]\s*[-:]?\s*", "CHP ", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"^\s*\[Appended,\s*[^\]]+\]\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"^\s*\[\d+\]\s*", "", cleaned)
     cleaned = re.sub(r"^[\[\]\s,;:.-]+", "", cleaned)
     cleaned = re.sub(r"\[[^\]]*\]", " ", cleaned)
     cleaned = cleaned.replace("[", " ").replace("]", " ")
@@ -687,10 +796,34 @@ def _to_plain_english(text):
     cleaned = re.sub(r"\bX\s*(\d+)\b", r"\1 times", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\s+", " ", cleaned).strip(" -;:,.")
     cleaned = re.sub(r"\btraffic collision-\s*en route\b", "traffic collision with CHP units en route", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\btraffic collision[-\\s]+no injuries\b", "traffic collision with no reported injuries", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bsolo\s+vehicle\b", "single vehicle", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bsolo\s+mc\b", "single motorcycle", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bmc\b", "motorcycle", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\brider\b", "motorcycle rider", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\b(\d+)\s+veh\s+tc\b", r"\1-vehicle traffic collision", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bmulti\s+veh\b", "multi-vehicle", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\b3\s+vehicle\s+traffic collision\b", "3-vehicle traffic collision", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\b2\s+vehicle\s+traffic collision\b", "2-vehicle traffic collision", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bno\s+veh\s+desc\b", "no vehicle description yet", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bpossibly\s+more\b", "possibly more vehicles involved", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bhigh\s+speeds\s+prior\s+to\s+traffic collision\b", "was reportedly speeding before the crash", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bdeclined\s+unknown if vehicle is drivable\b", "declined medical help; it is unknown whether the vehicle is drivable", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bhas\s+hazards\s+on\b", "hazard lights are on", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bboth\s+sides\s+of\s+her\s+vehicle\s+were\s+hit\b", "both sides of her vehicle were hit", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bunknown\s+what\s+types\s+of\s+vehicles\b", "it is unclear what types of vehicles hit her", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bFire Department\s+blocking\s+the\s+HOV\s+lane\b", "the Fire Department is blocking the HOV lane", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bstart\s+1185\b", "started the tow request", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\brotation\s+request\s+comment\b", "Tow truck requested", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bproblem changed from\s+traffic collision-?unknown injuries\s+to\s+traffic collision with CHP units en route\b", "The incident was updated from unknown injuries to CHP units and medical response en route", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\binjuriesuries\b", "injuries", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\binjuries['’]s\b", "injuries", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\bnegative injuries\b", "no injuries", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\bdriveable\b", "drivable", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bo\s+and\s+turn(ed)?\b", "overturned", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bo\s+and\s+turned\b", "overturned", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\bon\s+top\s+on\b", "on top of", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\boverturned\s+on\s+right\s+shoulder\s+ditch", "overturned on the right shoulder in a ditch", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(
         r"\b(gray|grey|white|black|red|silver)\s+unknown\s+(sedan|SUV|vehicle)\b",
         r"an unknown \1 \2",
@@ -698,17 +831,93 @@ def _to_plain_english(text):
         flags=re.IGNORECASE,
     )
     cleaned = re.sub(r"\binjuries['’]s\b", "injuries", cleaned, flags=re.IGNORECASE)
+    special_rules = [
+        (
+            re.compile(r"^multi-vehicle traffic collision blocking middle lanes no vehicle description yet$", re.IGNORECASE),
+            "A multi-vehicle traffic collision is blocking the middle lanes. No vehicle descriptions were available yet",
+        ),
+        (
+            re.compile(r"^3-vehicle traffic collision and red unknown pickup truck on right shoulder versus gray nissan sentra versus unknown vehicle$", re.IGNORECASE),
+            "A 3-vehicle crash was reported involving a red pickup truck on the right shoulder, a gray Nissan Sentra, and an unknown third vehicle",
+        ),
+        (
+            re.compile(r"^gray nissan sentra was reportedly speeding before the crash$", re.IGNORECASE),
+            "The gray Nissan Sentra was reportedly speeding before the crash",
+        ),
+        (
+            re.compile(r"^2 vehicle middle lane$", re.IGNORECASE),
+            "Two vehicles were reported in the middle lane",
+        ),
+        (
+            re.compile(r"^2-vehicle traffic collision and one in center divider and one on right shoulder$", re.IGNORECASE),
+            "A 2-vehicle collision was reported, with one vehicle in the center divider and the other on the right shoulder",
+        ),
+        (
+            re.compile(r"^medical command was contacted[- ]airbags for vehicle on right shoulder$", re.IGNORECASE),
+            "Medical command was contacted, and airbags were reported deployed in the vehicle on the right shoulder",
+        ),
+        (
+            re.compile(r"^3 vehicle traffic collision possibly more vehicles involved$", re.IGNORECASE),
+            "At least 3 vehicles were reported involved, and possibly more",
+        ),
+        (
+            re.compile(r"^reporting party in a gray mazda suv cx-9 on right shoulder another vehicle on right shoulder and 3rd vehicle in center divider$", re.IGNORECASE),
+            "The reporting party said they were in a gray Mazda CX-9 on the right shoulder, with another vehicle also on the right shoulder and a third in the center divider",
+        ),
+        (
+            re.compile(r"^involved in mazda suv declined medical help; it is unknown whether the vehicle is drivable and hazard lights are on$", re.IGNORECASE),
+            "An involved person in the Mazda SUV declined medical help. It is unclear whether the vehicle can be driven, and its hazard lights are on",
+        ),
+        (
+            re.compile(r"^involved in mazda advise both sides of her vehicle were hit it is unclear what types of vehicles hit her$", re.IGNORECASE),
+            "The Mazda driver said both sides of her vehicle were hit, but she could not identify the other vehicles",
+        ),
+        (
+            re.compile(r"^CHP off duty staff sergeant in gray tesla not involved and gray honda hrv in center divider bro 4dr sedan on right shoulder and red pickup truck on right shoulder unknown if involved$", re.IGNORECASE),
+            "An off-duty CHP sergeant in a gray Tesla was on scene but not involved. A gray Honda HR-V was in the center divider, a damaged 4-door sedan was on the right shoulder, and it was still unclear whether the red pickup truck on the shoulder was involved",
+        ),
+        (
+            re.compile(r"^CHP the incident was updated from unknown injuries to CHP units and medical response en route$", re.IGNORECASE),
+            "The incident was updated from unknown injuries to units and medical help en route",
+        ),
+        (
+            re.compile(r"^a87 in the center divider , the Fire Department is blocking the hov lane$", re.IGNORECASE),
+            "A unit reported a vehicle in the center divider, and the Fire Department was blocking the HOV lane",
+        ),
+        (
+            re.compile(r"^87-7 started the tow request$", re.IGNORECASE),
+            "An officer started the tow request",
+        ),
+        (
+            re.compile(r"^tow truck requested \*\* pacific autow$", re.IGNORECASE),
+            "Tow truck requested from Pacific Auto",
+        ),
+    ]
+
+    for pattern, replacement in special_rules:
+        if pattern.match(cleaned):
+            cleaned = replacement
+            break
+
     if not cleaned:
         return "Dispatch update received."
 
     lowered = cleaned.lower()
     lowered = re.sub(r"\bchp\b", "CHP", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bsdpd\b", "San Diego Police Department", lowered, flags=re.IGNORECASE)
     lowered = re.sub(
         r"\bsan diego sheriff's office\b",
         "San Diego Sheriff's Office",
         lowered,
         flags=re.IGNORECASE,
     )
+    lowered = re.sub(r"\balberstsons?\b", "Albertsons", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\balbertsons?\b", "Albertsons", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bsweewater\b", "Sweetwater", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bsweetwater road\b", "Sweetwater Road", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\borasco\b", "Orosco", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bguejito\b", "Guejito", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bpulling into\b", "pulled into", lowered, flags=re.IGNORECASE)
     lowered = re.sub(r"\bcaltrans\b", "Caltrans", lowered, flags=re.IGNORECASE)
     lowered = re.sub(r"\bsuv\b", "SUV", lowered, flags=re.IGNORECASE)
     lowered = re.sub(r"\biphone\b", "iPhone", lowered, flags=re.IGNORECASE)
@@ -748,6 +957,9 @@ def _to_plain_english(text):
     lowered = re.sub(r"\bclancy's\b", "Clancy's", lowered, flags=re.IGNORECASE)
     lowered = re.sub(r"\bclancy's tow\b", "Clancy's Tow", lowered, flags=re.IGNORECASE)
     lowered = re.sub(r"\bsandr tow\b", "SandR Tow", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bs and r tow\b", "SandR Tow", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bmdc\b", "mobile data computer", lowered, flags=re.IGNORECASE)
+    lowered = re.sub(r"\bbased on\b", "Based on", lowered, flags=re.IGNORECASE)
     return _to_sentence_case(lowered)
 
 
@@ -841,6 +1053,16 @@ def _format_location(raw_location):
     return re.sub(r"\s+", " ", text).strip()
 
 
+def _detail_sort_key(detail):
+    raw_time = re.sub(r"\s+", " ", ((detail or {}).get("time") or "").strip())
+    for fmt in ("%b %d %Y %I:%M%p", "%b %d %Y %I:%M %p"):
+        try:
+            return (0, datetime.strptime(raw_time, fmt))
+        except ValueError:
+            continue
+    return (1, raw_time)
+
+
 def _normalize_summary_detail(text):
     detail = _strip_terminal_punctuation(text)
     detail = re.sub(r"^A\s+", "a ", detail)
@@ -855,15 +1077,23 @@ def _normalize_summary_detail(text):
 
 
 def local_summary(incident):
-    details = incident.get("details") or []
+    details = sorted(incident.get("details") or [], key=_detail_sort_key)
     timeline_plain = []
-    for d in reversed(details):
+    for d in details:
         raw = (d.get("text") or "").strip()
         if not raw or _is_admin_detail(raw):
             continue
         timeline_plain.append(_to_plain_english(raw))
 
-    first_detail = timeline_plain[0] if timeline_plain else "No detailed updates yet."
+    primary_detail = next(
+        (
+            t
+            for t in timeline_plain
+            if not re.search(r"\btow\b|\bincident has been closed\b|\bwalk-in patients\b", t, re.IGNORECASE)
+        ),
+        "",
+    )
+    first_detail = primary_detail or (timeline_plain[0] if timeline_plain else "No detailed updates yet.")
     incident_type = _strip_terminal_punctuation(translate_label(incident.get("type") or "Incident")).lower()
     incident_type = re.sub(r"\bchp\b", "CHP", incident_type, flags=re.IGNORECASE)
     incident_type = re.sub(r"\s+with CHP units en route\b", "", incident_type, flags=re.IGNORECASE)
@@ -1013,6 +1243,8 @@ Details:
 """
 
     content = _chat_with_openai(prompt, api_key)
+    if not content or content.startswith("AI interpretation unavailable:"):
+        return safe_summary
     if not _is_summary_usable(content):
         return safe_summary
     return content.strip()
@@ -1021,80 +1253,16 @@ Details:
 def translate_timeline_details(details):
     translated = []
     for d in details or []:
+        local_text = _to_plain_english(d.get("text") or "No detail text")
         translated.append(
             {
                 "time": d.get("time"),
                 "text": d.get("text"),
-                "ai_text": _to_plain_english(d.get("text")),
+                "ai_text": local_text,
             }
         )
 
     if not translated:
         return translated
-
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        return translated
-
-    numbered = []
-    for idx, d in enumerate(translated, start=1):
-        numbered.append(f"{idx}|||{d['text'] or 'No detail text'}")
-
-    prompt = f"""
-Translate each CHP CAD line into plain, natural English for the public.
-Rules:
-- Expand or rewrite CHP/CAD codes and radio shorthand into normal words.
-- Do NOT output numeric CHP codes (examples: 1039, 1125, 1185, 1144).
-- Do NOT output dispatch abbreviations/shorthand (examples: NCOMM, RP, TC, NB, SB, RHS).
-- If a code meaning is uncertain, write a clear plain-language approximation without the code.
-- Keep each translation short (1 sentence).
-- Return exactly one output line per input line.
-- Format each output line as: index|||translation
-- Do not skip or reorder any index.
-
-INPUT:
-{chr(10).join(numbered)}
-"""
-
-    content = _chat_with_openai(prompt, api_key)
-    if not content or content.startswith("AI interpretation unavailable:"):
-        return translated
-
-    parsed = {}
-    for line in content.splitlines():
-        m = re.match(r"^\s*(\d+)\s*\|\|\|\s*(.+?)\s*$", line)
-        if not m:
-            continue
-        parsed[int(m.group(1))] = m.group(2)
-
-    for idx, row in enumerate(translated, start=1):
-        candidate = (parsed.get(idx) or "").strip()
-        if not candidate:
-            continue
-        if _contains_dispatch_code(candidate):
-            # AI sometimes echoes CAD shorthand; prefer deterministic local translation.
-            row["ai_text"] = _to_plain_english(row.get("text"))
-            continue
-        row["ai_text"] = _to_plain_english(candidate)
-
-    # Cleanup pass: if coded output still appears, force a second plain-English rewrite.
-    for row in translated:
-        text = row.get("ai_text") or ""
-        if not _contains_dispatch_code(text):
-            continue
-        retry_prompt = f"""
-Rewrite this dispatch line into plain, natural English for non-police readers.
-Do not include any CAD/CHP codes or abbreviations in the final sentence.
-Line: {row.get('text') or text}
-"""
-        retry = _chat_with_openai(retry_prompt, api_key)
-        if retry and not retry.startswith("AI interpretation unavailable:"):
-            retry_clean = _to_plain_english(retry.strip())
-            if _contains_dispatch_code(retry_clean):
-                row["ai_text"] = _to_plain_english(row.get("text"))
-            else:
-                row["ai_text"] = retry_clean
-        else:
-            row["ai_text"] = _to_plain_english(row.get("text"))
 
     return translated

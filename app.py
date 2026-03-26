@@ -5,7 +5,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from ai_interpreter import interpret_incident, translate_label, translate_timeline_details
+from ai_interpreter import interpret_incident, local_summary, translate_label, translate_timeline_details
 from feed_parser import get_border_incidents
 
 # Local dev convenience: load Cloud Run-style env file if present.
@@ -48,6 +48,7 @@ def index():
     map_incidents = []
     for incident in incidents:
         incident["type_display"] = clean_type_label(incident.get("type"))
+        incident["feed_preview"] = local_summary(incident)
         lat = incident.get("lat")
         lon = incident.get("lon")
         in_sd_county = (
