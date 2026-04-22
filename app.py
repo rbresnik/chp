@@ -27,11 +27,30 @@ SD_MIN_LAT = 32.53
 SD_MAX_LAT = 33.51
 SD_MIN_LON = -117.60
 SD_MAX_LON = -116.08
+BUILD_REVISION = os.getenv("K_REVISION", "local")
+BUILD_SERVICE = os.getenv("K_SERVICE", "chp-flask-app")
 
 
 @app.route("/healthz")
 def healthz():
-    return {"status": "ok"}, 200
+    return {"status": "ok", "revision": BUILD_REVISION, "service": BUILD_SERVICE}, 200
+
+
+@app.route("/_healthz")
+def underscore_healthz():
+    return {"status": "ok", "revision": BUILD_REVISION, "service": BUILD_SERVICE}, 200
+
+
+@app.route("/version")
+def version():
+    return {"revision": BUILD_REVISION, "service": BUILD_SERVICE}, 200
+
+
+@app.after_request
+def add_build_headers(response):
+    response.headers["X-App-Revision"] = BUILD_REVISION
+    response.headers["X-App-Service"] = BUILD_SERVICE
+    return response
 
 
 def clean_type_label(raw_type):
