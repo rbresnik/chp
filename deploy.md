@@ -1,37 +1,47 @@
-# Firebase App Hosting deployment
+# Cloud Run backend deployment
 
 ## 1. One-time setup
 
 ```powershell
 npm install -g firebase-tools
 firebase login
-firebase use chpf-2026-rbres
+gcloud auth login
+gcloud config set project project-7a553536-625a-43b4-836
 ```
 
-## 2. Create the backend in Firebase App Hosting
+## 2. Deploy the backend to Cloud Run
 
-From the Firebase console:
-1. Go to **App Hosting**.
-2. Create a backend connected to this source directory/repo.
-3. Region: `us-central1`.
+This repo is the Cloud Run backend. The live service is:
 
-App Hosting will use `apphosting.yaml` in this folder.
-
-App Hosting builds the app with Cloud Build and serves it on Cloud Run.
+`chp-flask-app` in `project-7a553536-625a-43b4-836`
 
 ## 3. Set OpenAI secret (required for AI)
 
 ```powershell
-firebase apphosting:secrets:set OPENAI_API_KEY
+gcloud run services update chp-flask-app `
+  --region us-central1 `
+  --project project-7a553536-625a-43b4-836 `
+  --set-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest
 ```
 
 ## 4. Deploy
 
-Push your code changes. App Hosting deploys from your connected source branch.
+```powershell
+gcloud run deploy chp-flask-app `
+  --source . `
+  --project project-7a553536-625a-43b4-836 `
+  --region us-central1 `
+  --platform managed `
+  --allow-unauthenticated
+```
 
-If you configured manual deploy in the console, trigger a deploy there after pushing.
+## 5. Current live URL
 
-## 5. Local run (optional)
+The service currently serves at:
+
+`https://chp-flask-app-5bt6pirytq-uc.a.run.app`
+
+## 6. Local run (optional)
 
 ```powershell
 pip install -r requirements.txt

@@ -1,6 +1,11 @@
 .venv/
 __pycache__/
 *.pyc
+.codex/
+firebase-debug.log
+server*.log
+server*.out
+server*.err
 
 # Local secrets
 .env
