@@ -1,4 +1,4 @@
-# Firebase-only deployment (no Functions)
+# Firebase App Hosting deployment
 
 ## 1. One-time setup
 
@@ -16,6 +16,8 @@ From the Firebase console:
 3. Region: `us-central1`.
 
 App Hosting will use `apphosting.yaml` in this folder.
+
+App Hosting builds the app with Cloud Build and serves it on Cloud Run.
 
 ## 3. Set OpenAI secret (required for AI)
 
@@ -36,13 +38,3 @@ pip install -r requirements.txt
 $env:OPENAI_API_KEY="your_key_here"
 python app.py
 ```
-
-## Render settings (recommended)
-
-- Build Command: `pip install -r requirements.txt`
-- Start Command: `gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 120 app:app`
-- Env vars:
-  - `OPENAI_API_KEY=<your_key>`
-  - `WEB_CONCURRENCY=2`
-
-`render.yaml` in this repo contains the same defaults.
