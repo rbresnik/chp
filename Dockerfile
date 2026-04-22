@@ -13,4 +13,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD ["python", "-m", "flask", "--app", "app.py", "run", "--host=0.0.0.0", "--port=8080"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "2", "--threads", "4", "--timeout", "120", "app:app"]

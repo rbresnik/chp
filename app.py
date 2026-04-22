@@ -5,7 +5,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from ai_interpreter import interpret_incident, local_summary, translate_label, translate_timeline_details
+from ai_interpreter import clean_label, interpret_incident, summarize_incident, translate_timeline_details
 from feed_parser import get_border_incidents
 
 # Local dev convenience: load Cloud Run-style env file if present.
@@ -39,7 +39,19 @@ def clean_type_label(raw_type):
         return "Unknown"
     # Remove CHP numeric code prefix like "1125-" or "20002-".
     stripped = re.sub(r"^\s*\d+[A-Za-z]?\s*-\s*", "", raw_type).strip() or raw_type
-    return translate_label(stripped)
+    return clean_label(stripped)
+
+
+def is_traffic_collision(text):
+    normalized = re.sub(r"\s+", " ", (text or "")).strip().lower()
+    if not normalized:
+        return False
+    return bool(
+        re.search(r"\btraffic\s+collision\b", normalized)
+        or re.search(r"\btrfc\b", normalized)
+        or re.search(r"\btc\b", normalized)
+        or "collision" in normalized
+    )
 
 
 @app.route("/")
@@ -47,9 +59,15 @@ def index():
     incidents = get_border_incidents()
     map_incidents = []
     ai_enabled = bool(os.getenv("OPENAI_API_KEY"))
+    traffic_count = 0
     for incident in incidents:
         incident["type_display"] = clean_type_label(incident.get("type"))
-        incident["feed_preview"] = local_summary(incident)
+        incident["feed_preview"] = summarize_incident(incident)
+        incident["is_traffic_collision"] = is_traffic_collision(
+            incident.get("type") or incident.get("type_display") or incident.get("desc")
+        )
+        if incident["is_traffic_collision"]:
+            traffic_count += 1
         lat = incident.get("lat")
         lon = incident.get("lon")
         in_sd_county = (
@@ -67,30 +85,19 @@ def index():
                     "location": incident.get("location"),
                     "time": incident.get("time"),
                     "type": incident.get("type_display"),
+                    "is_traffic_collision": incident["is_traffic_collision"],
                 }
             )
     return render_template(
         "index.html",
         incidents=incidents,
         count=len(incidents),
+        traffic_count=traffic_count,
+        other_count=max(len(incidents) - traffic_count, 0),
+        map_count=len(map_incidents),
         map_incidents=map_incidents,
         ai_enabled=ai_enabled,
     )
-
-
-def build_feed_summary(incident):
-    details_count = len(incident.get("details", []))
-    parts = [
-        f"Type: {translate_label(incident.get('type') or 'Unknown')}",
-        f"Time: {incident.get('time') or 'Unknown'}",
-        f"Location: {incident.get('location') or 'Unknown'}",
-        f"Description: {translate_label(incident.get('desc') or 'None')}",
-        f"Area: {incident.get('area') or 'Unknown'}",
-        f"Timeline Entries: {details_count}",
-    ]
-    return " | ".join(parts)
-
-
 @app.route("/incident/<incident_id>")
 def incident_detail(incident_id):
     incidents = get_border_incidents()
@@ -100,14 +107,11 @@ def incident_detail(incident_id):
     if incident is None:
         abort(404)
     incident["type_display"] = clean_type_label(incident.get("type"))
+    incident["is_traffic_collision"] = is_traffic_collision(
+        incident.get("type") or incident.get("type_display") or incident.get("desc")
+    )
 
     readable = interpret_incident(incident)
-    if (
-        not readable
-        or readable.startswith("OPENAI_API_KEY is not set")
-        or readable.startswith("AI interpretation unavailable:")
-    ):
-        readable = build_feed_summary(incident)
 
     timeline = translate_timeline_details(incident.get("details", []))
     # Feed details are newest-first; render oldest-first so the first event is at the top.

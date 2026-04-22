@@ -8,32 +8,181 @@
     :root {
       --red: #b30000;
       --red-dark: #7a0000;
+      --green: #0b7a2f;
+      --green-dark: #065c23;
       --black: #111111;
       --border: #d0d0d0;
       --card: #ffffff;
-      --bg: #f7f7f7;
+      --white: #ffffff;
+      --bg: #f6f7f9;
+      --muted: #59616f;
+      --surface: rgba(255, 255, 255, 0.92);
     }
     body {
       font-family: "Segoe UI", Tahoma, sans-serif;
       font-size: 1.12rem;
-      max-width: 980px;
-      margin: 20px auto;
-      padding: 0 12px 24px;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 18px 12px 28px;
       line-height: 1.5;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top left, rgba(179, 0, 0, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(11, 122, 47, 0.10), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
       color: var(--black);
     }
-    h2 {
+    .page-shell {
+      display: grid;
+      gap: 16px;
+    }
+    .brand-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 12px 30px rgba(17, 17, 17, 0.08);
+      backdrop-filter: blur(10px);
+    }
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+    .brand-badge {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 6px 12px rgba(17, 17, 17, 0.16));
+      transform: rotate(-2deg);
+    }
+    .brand-copy {
+      min-width: 0;
+    }
+    .brand-copy .eyebrow {
+      margin-bottom: 4px;
+    }
+    .brand-copy h1 {
+      margin: 0;
+      color: var(--black);
+      font-size: clamp(1.5rem, 2.6vw, 2.3rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .brand-copy p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.85fr);
+      gap: 16px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 16px 36px rgba(17, 17, 17, 0.10);
+      backdrop-filter: blur(10px);
+    }
+    .eyebrow {
       margin: 0 0 8px;
       color: var(--red);
-      font-size: 1.08rem;
-    }
-    h1 {
-      margin: 0 0 8px;
-      color: var(--black);
-      font-size: 1.18rem;
+      font-size: 0.88rem;
       font-weight: 800;
-      line-height: 1.2;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      color: var(--black);
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .hero-copy p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-content: start;
+    }
+    .meta-card {
+      padding: 13px 14px 12px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.96);
+    }
+    .meta-label {
+      margin: 0 0 6px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .meta-value {
+      margin: 0;
+      font-size: 1.08rem;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+    .meta-value.red {
+      color: var(--red);
+    }
+    .meta-value.green {
+      color: var(--green);
+    }
+    h2, h3 {
+      margin: 0;
+    }
+    h2 {
+      font-size: 1.06rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-pill-on {
+      background: #e8f6ed;
+      color: #116530;
+      border: 1px solid #9fd0af;
+    }
+    .status-pill-on::before {
+      background: var(--green);
+    }
+    .status-pill-off {
+      background: #fff2f2;
+      color: #8b1e1e;
+      border: 1px solid #e1b0b0;
+    }
+    .status-pill-off::before {
+      background: var(--red);
     }
     .incident-desc {
       margin: 0 0 10px;
@@ -43,56 +192,67 @@
       text-shadow: none;
       line-height: 1.2;
     }
-    .status-pill {
-      display: inline-block;
-      margin: 0 0 12px;
-      padding: 6px 10px;
-      border-radius: 999px;
+    .summary-section, .timeline-section {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 14px 32px rgba(17, 17, 17, 0.08);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, rgba(17, 17, 17, 0.98), rgba(17, 17, 17, 0.92));
+      color: var(--white);
+    }
+    .section-header p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.74);
       font-size: 0.9rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-    }
-    .status-pill-on {
-      background: #e8f6ed;
-      color: #116530;
-      border: 1px solid #9fd0af;
-    }
-    .status-pill-off {
-      background: #fff2f2;
-      color: #8b1e1e;
-      border: 1px solid #e1b0b0;
-    }
-    h3 {
-      margin: 14px 0 8px;
-      font-size: 1.06rem;
     }
     .summary {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-left: 6px solid var(--red);
-      padding: 14px;
-      border-radius: 8px;
+      padding: 16px;
       white-space: pre-wrap;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-      font-size: 1.08rem;
-      line-height: 1.7;
+      font-size: 1.07rem;
+      line-height: 1.75;
+      color: var(--black);
+      border-left: 6px solid var(--red);
+      background:
+        linear-gradient(180deg, rgba(179, 0, 0, 0.03), rgba(255, 255, 255, 0.98)),
+        #fff;
     }
     .timeline {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-top: 12px;
+      padding: 14px;
     }
     .event {
       display: grid;
       grid-template-columns: 220px 1fr;
       gap: 12px;
       border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 8px;
-      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 14px;
+      padding: 12px 14px;
       align-items: start;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .event::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      background: linear-gradient(180deg, var(--red), var(--red-dark));
     }
     .event-time {
       font-weight: 700;
@@ -108,30 +268,47 @@
       align-items: center;
       justify-content: center;
       margin-top: 16px;
-      background: var(--black);
+      background: linear-gradient(180deg, var(--black), #000000);
       color: #fff;
       text-decoration: none;
       border: 1px solid #000;
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 0 12px;
       font-weight: 700;
       min-height: 36px;
       line-height: 1;
       text-align: center;
       font-size: 1.06rem;
+      box-shadow: 0 8px 16px rgba(17, 17, 17, 0.14);
     }
     .back-btn:hover {
       background: var(--red);
     }
     @media (max-width: 760px) {
       body {
-        margin-top: 12px;
-        padding: 0 10px 18px;
+        padding: 12px 10px 18px;
       }
-      .incident-desc {
-        color: #111111;
-        font-weight: 800;
-        text-shadow: none;
+      .brand-banner {
+        padding: 12px 14px;
+        align-items: flex-start;
+      }
+      .brand-lockup {
+        align-items: flex-start;
+      }
+      .brand-badge {
+        width: 60px;
+        height: 60px;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+      .meta-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
       }
       .summary {
         padding: 12px;
@@ -156,33 +333,82 @@
   </style>
 </head>
 <body>
-  <h2>Incident {{ incident.id }}</h2>
-  <h1>{{ incident.location or "Unknown location" }}</h1>
-  <p class="incident-desc">{{ incident.type_display or incident.type or "Unknown" }}</p>
-  <div class="status-pill {{ 'status-pill-on' if ai_enabled else 'status-pill-off' }}">
-    {{ 'AI translation enabled' if ai_enabled else 'AI translation fallback mode' }}
-  </div>
+  <div class="page-shell">
+    <section class="brand-banner">
+      <div class="brand-lockup">
+        <img class="brand-badge" src="/static/images.png" alt="California Highway Patrol badge">
+        <div class="brand-copy">
+          <p class="eyebrow">California Highway Patrol</p>
+          <h1>San Diego border incidents</h1>
+          <p>Live AI summaries, red traffic collisions, and green non-collision incidents.</p>
+        </div>
+      </div>
+    </section>
 
-  <h3>Summary</h3>
-  <div class="summary">{{ readable }}</div>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Incident {{ incident.id }}</p>
+        <h1>{{ incident.location or "Unknown location" }}</h1>
+        <p class="incident-desc">{{ incident.type_display or incident.type or "Unknown" }}</p>
+        <div class="status-pill {{ 'status-pill-on' if ai_enabled else 'status-pill-off' }}">
+          {{ 'Live AI interpretation' if ai_enabled else 'AI interpretation unavailable' }}
+        </div>
+      </div>
+      <div class="meta-grid">
+        <div class="meta-card">
+          <p class="meta-label">Location</p>
+          <p class="meta-value">{{ incident.location or "Unknown location" }}</p>
+        </div>
+        <div class="meta-card">
+          <p class="meta-label">Time</p>
+          <p class="meta-value">{{ incident.time or "Unknown time" }}</p>
+        </div>
+        <div class="meta-card">
+          <p class="meta-label">Area</p>
+          <p class="meta-value green">{{ incident.area or "Unknown" }}</p>
+        </div>
+        <div class="meta-card">
+          <p class="meta-label">Type</p>
+          <p class="meta-value red">{{ incident.type_display or incident.type or "Unknown" }}</p>
+        </div>
+      </div>
+    </section>
 
-  <h3>Feed Timeline</h3>
-  <div class="timeline">
-    {% for d in timeline %}
-    <div class="event">
-      <div class="event-time">{{ d.time or "No timestamp" }}</div>
-      <div class="event-text">{{ d.ai_text or d.text or "No detail text" }}</div>
+    <section class="summary-section">
+      <div class="section-header">
+        <div>
+          <h2>AI Interpretation</h2>
+          <p>Live summary generated from the raw CHP feed.</p>
+        </div>
+      </div>
+      <div class="summary">{{ readable }}</div>
+    </section>
+
+    <section class="timeline-section">
+      <div class="section-header">
+        <div>
+          <h2>Feed Timeline</h2>
+          <p>Translated line by line from newest to oldest feed entries.</p>
+        </div>
+      </div>
+      <div class="timeline">
+        {% for d in timeline %}
+        <div class="event">
+          <div class="event-time">{{ d.time or "No timestamp" }}</div>
+          <div class="event-text">{{ d.ai_text or d.text or "No detail text" }}</div>
+        </div>
+        {% else %}
+        <div class="event">
+          <div class="event-time">No timeline</div>
+          <div class="event-text">No detail events are available for this incident.</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div style="text-align:center;">
+      <a class="back-btn" href="/">Back to Incidents</a>
     </div>
-    {% else %}
-    <div class="event">
-      <div class="event-time">No timeline</div>
-      <div class="event-text">No detail events are available for this incident.</div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <div style="text-align:center;">
-    <a class="back-btn" href="/">Back to Incidents</a>
   </div>
 </body>
 </html>

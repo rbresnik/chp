@@ -17,9 +17,11 @@
       --green: #0b7a2f;
       --green-dark: #065c23;
       --black: #111111;
-      --gray: #f5f5f5;
-      --border: #d0d0d0;
+      --gray: #f4f5f7;
+      --border: #d7d9df;
+      --muted: #5d6472;
       --white: #ffffff;
+      --surface: rgba(255, 255, 255, 0.9);
     }
     * {
       box-sizing: border-box;
@@ -27,19 +29,147 @@
     body {
       font-family: "Segoe UI", Tahoma, sans-serif;
       color: var(--black);
-      background: linear-gradient(180deg, #ffffff 0%, #f7f7f7 100%);
+      background:
+        radial-gradient(circle at top left, rgba(179, 0, 0, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(11, 122, 47, 0.10), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #f5f6f8 100%);
       margin: 0;
       padding: 20px 12px 28px;
       font-size: 1.06rem;
     }
-    .container {
-      max-width: 1100px;
+    .page-shell {
+      max-width: 1240px;
       margin: 0 auto;
     }
-    h1 {
-      margin: 0 0 6px;
+    .brand-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 12px 30px rgba(17, 17, 17, 0.08);
+      backdrop-filter: blur(10px);
+    }
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+    .brand-badge {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 6px 12px rgba(17, 17, 17, 0.16));
+    }
+    .brand-copy {
+      min-width: 0;
+    }
+    .brand-copy .eyebrow {
+      margin-bottom: 4px;
+    }
+    .brand-copy h1 {
+      margin: 0;
+      color: var(--black);
+      font-size: clamp(1.5rem, 2.6vw, 2.3rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+    .brand-copy p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+    .brand-banner .brand-badge {
+      transform: rotate(-2deg);
+    }
+    .hero {
+      margin-bottom: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 16px 40px rgba(17, 17, 17, 0.10);
+      backdrop-filter: blur(10px);
+    }
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-content: start;
+    }
+    .metric-card {
+      padding: 14px 14px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+    .metric-label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .metric-value {
+      margin: 0;
+      font-size: 1.85rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+    .metric-value.red {
       color: var(--red);
-      font-size: clamp(1.35rem, 2.2vw, 2rem);
+    }
+    .metric-value.green {
+      color: var(--green);
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+    .status-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-pill-on {
+      background: #e8f6ed;
+      color: #116530;
+      border: 1px solid #9fd0af;
+    }
+    .status-pill-on::before {
+      background: var(--green);
+    }
+    .status-pill-off {
+      background: #fff2f2;
+      color: #8b1e1e;
+      border: 1px solid #e1b0b0;
+    }
+    .status-pill-off::before {
+      background: var(--red);
     }
     .incident-line {
       margin: 0;
@@ -55,92 +185,297 @@
       margin: 10px 0 0;
       font-size: 0.97rem;
       line-height: 1.5;
-      color: #303030;
+      color: var(--muted);
       max-width: 58ch;
     }
-    .meta {
-      margin: 0 0 18px;
-      font-weight: 600;
-      font-size: 1.02rem;
+    .section-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      box-shadow: 0 14px 36px rgba(17, 17, 17, 0.08);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
     }
-    .status-pill {
-      display: inline-block;
-      margin: 0 0 18px;
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, rgba(17, 17, 17, 0.98), rgba(17, 17, 17, 0.92));
+      color: var(--white);
+    }
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.02rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .section-header .section-subtitle {
+      margin: 0;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.78);
+    }
+    .map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 6px 10px;
       border-radius: 999px;
-      font-size: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 0.82rem;
       font-weight: 800;
-      letter-spacing: 0.02em;
+      white-space: nowrap;
     }
-    .status-pill-on {
-      background: #e8f6ed;
-      color: #116530;
-      border: 1px solid #9fd0af;
+    .legend-chip::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      display: inline-block;
     }
-    .status-pill-off {
-      background: #fff2f2;
-      color: #8b1e1e;
-      border: 1px solid #e1b0b0;
+    .legend-chip.red {
+      color: #ffbcbc;
     }
-    table {
+    .legend-chip.green {
+      color: #bfe7c9;
+    }
+    .legend-chip.gray {
+      color: #d9dbe2;
+    }
+    .map-body {
+      padding: 0;
+    }
+    .map-wrap {
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      overflow: hidden;
+      background: transparent;
+      box-shadow: none;
+      max-width: none;
+    }
+    #incidents-map {
       width: 100%;
-      border-collapse: collapse;
-      background: var(--white);
-      border: 1px solid var(--border);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      height: 540px;
     }
-    th, td {
-      border-bottom: 1px solid var(--border);
-      padding: 10px;
+    .map-empty {
+      padding: 16px 18px 18px;
+      margin: 0;
+      font-size: 0.96rem;
+      color: var(--muted);
+    }
+    .board-wrap {
+      margin-top: 18px;
+    }
+    .incident-board {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+      background: transparent;
+    }
+    .incident-board thead th {
+      background: transparent;
+      color: var(--muted);
+      position: static;
+      padding: 0 14px 6px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 0;
+    }
+    .incident-board tbody tr {
+      box-shadow: 0 10px 24px rgba(17, 17, 17, 0.08);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    .incident-board tbody tr:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 30px rgba(17, 17, 17, 0.12);
+    }
+    .incident-board td {
+      border-bottom: 0;
+      padding: 14px 14px;
       text-align: left;
       vertical-align: top;
-      font-size: 1.02rem;
+      font-size: 1.01rem;
+      background: rgba(255, 255, 255, 0.97);
     }
-    tbody tr + tr td {
-      border-top: 2px solid var(--red);
+    .incident-board td:first-child {
+      width: 170px;
     }
-    th {
-      background: var(--black);
+    .incident-board td:last-child {
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+    .incident-board td:first-child {
+      border-top-left-radius: 16px;
+      border-bottom-left-radius: 16px;
+      border-left: 6px solid transparent;
+    }
+    .incident-row.row-traffic td:first-child {
+      border-left-color: var(--red);
+    }
+    .incident-row.row-other td:first-child {
+      border-left-color: var(--green);
+    }
+    .incident-row.row-traffic td {
+      background: linear-gradient(180deg, rgba(179, 0, 0, 0.035), rgba(255, 255, 255, 0.98));
+    }
+    .incident-row.row-other td {
+      background: linear-gradient(180deg, rgba(11, 122, 47, 0.03), rgba(255, 255, 255, 0.98));
+    }
+    .details-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 44px;
       color: var(--white);
-      position: sticky;
-      top: 0;
+      text-decoration: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
+      box-shadow: 0 8px 16px rgba(17, 17, 17, 0.12);
     }
-    tr:nth-child(even) td {
-      background: var(--gray);
+    .details-btn:hover {
+      transform: translateY(-1px);
+      filter: saturate(1.05);
     }
-    .group-row td {
-      background: var(--black) !important;
+    .details-btn-traffic {
+      background: linear-gradient(180deg, var(--red), var(--red-dark));
+      border: 1px solid rgba(122, 0, 0, 0.8);
+    }
+    .details-btn-other {
+      background: linear-gradient(180deg, var(--green), var(--green-dark));
+      border: 1px solid rgba(6, 92, 35, 0.8);
+    }
+    .details-btn-traffic:hover {
+      background: linear-gradient(180deg, var(--red-dark), #560000);
+    }
+    .details-btn-other:hover {
+      background: linear-gradient(180deg, var(--green-dark), #044116);
+    }
+    .incident-board .group-row td {
+      background: linear-gradient(90deg, rgba(17, 17, 17, 0.98), rgba(17, 17, 17, 0.92)) !important;
       color: var(--white);
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      border-bottom: 2px solid var(--red);
-      padding-top: 8px;
-      padding-bottom: 8px;
+      letter-spacing: 0.08em;
+      border-bottom: 0;
+      border-radius: 14px;
+      padding: 11px 16px;
+      box-shadow: 0 8px 18px rgba(17, 17, 17, 0.14);
+    }
+    .incident-board .group-row td::before {
+      display: none;
     }
     .details-btn {
-      display: inline-block;
-      color: var(--white);
-      text-decoration: none;
-      border-radius: 8px;
-      padding: 9px 12px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      min-height: 40px;
+      display: inline-flex;
+      width: 100%;
+      min-height: 44px;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
-    .details-btn-traffic {
-      background: var(--red);
-      border: 1px solid var(--red-dark);
+    @media (min-width: 761px) {
+      .incident-board {
+        border: 0;
+      }
+      .incident-board th,
+      .incident-board td {
+        border: 0;
+      }
     }
-    .details-btn-traffic:hover {
-      background: var(--red-dark);
+    @media (max-width: 920px) {
+      .brand-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    .hero-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .incident-board td:first-child {
+        width: auto;
+      }
     }
-    .details-btn-other {
-      background: var(--green);
-      border: 1px solid var(--green-dark);
-    }
-    .details-btn-other:hover {
-      background: var(--green-dark);
+    @media (max-width: 760px) {
+      body {
+        padding: 12px 10px 20px;
+      }
+      .brand-banner {
+        padding: 12px 14px;
+      }
+      .brand-lockup {
+        align-items: flex-start;
+      }
+      .brand-badge {
+        width: 60px;
+        height: 60px;
+      }
+      .hero-metrics {
+        grid-template-columns: 1fr 1fr;
+      }
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .incident-board,
+      .incident-board thead,
+      .incident-board tbody,
+      .incident-board tr,
+      .incident-board th,
+      .incident-board td {
+        display: block;
+      }
+      .incident-board thead {
+        display: none;
+      }
+      .incident-board tr {
+        margin-bottom: 12px;
+      }
+      .incident-board td {
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 12px;
+      }
+      .incident-board td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .incident-board td[data-label="Details"]::before {
+        display: none;
+      }
+      .incident-board td:last-child {
+        border-bottom: 0;
+      }
+      .incident-row td:first-child,
+      .incident-row td:last-child {
+        border-radius: 0;
+      }
+      .details-btn {
+        width: 100%;
+      }
+      #incidents-map {
+        height: 420px;
+      }
     }
     .loading-overlay {
       position: fixed;
@@ -173,18 +508,6 @@
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-    .map-wrap {
-      margin-top: 16px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      background: var(--white);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-      max-width: 760px;
-      margin-left: auto;
-      margin-right: auto;
     }
     .map-title {
       margin: 0;
@@ -232,156 +555,127 @@
     .popup-btn-other:hover {
       background: var(--green-dark);
     }
-    @media (min-width: 761px) {
-      table {
-        border: 0;
-      }
-      th, td {
-        border: 0;
-      }
-      .map-wrap {
-        border: 0;
-      }
-      .details-btn {
-        border: 0;
-      }
-    }
-    @media (max-width: 760px) {
-      body {
-        padding: 14px 10px 22px;
-      }
-      table,
-      thead,
-      tbody,
-      tr,
-      th,
-      td {
-        display: block;
-      }
-      thead {
-        display: none;
-      }
-      tr {
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        margin-bottom: 10px;
-        padding: 8px;
-        background: var(--white);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-        display: flex;
-        flex-direction: column;
-      }
-      tbody tr + tr {
-        border-top: 0;
-      }
-      tbody tr + tr td {
-        border-top: 0;
-      }
-      td {
-        border: 0;
-        border-bottom: 1px solid var(--border);
-        padding: 8px 6px;
-      }
-      td[data-label="Details"] {
-        border-top: 0;
-        border-bottom: 4px solid var(--red);
-        padding-top: 10px;
-        padding-bottom: 10px;
-        order: 99;
-      }
-      td:last-child {
-        border-bottom: 0;
-      }
-      td::before {
-        content: attr(data-label);
-        display: block;
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #666;
-        margin-bottom: 3px;
-      }
-      td[data-label="Details"]::before {
-        display: none;
-      }
-      .group-row td::before {
-        display: none;
-      }
-      .details-btn {
-        width: 100%;
-        text-align: center;
-      }
-      #incidents-map {
-        height: 460px;
-      }
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>CHP Traffic Information</h1>
-    <p class="meta">Number of Incidents: {{ count }}</p>
-    <div class="status-pill {{ 'status-pill-on' if ai_enabled else 'status-pill-off' }}">
-      {{ 'AI translation enabled' if ai_enabled else 'AI translation fallback mode' }}
-    </div>
-
-    <section class="map-wrap">
-      <h2 class="map-title">Incident Map</h2>
-      {% if map_incidents %}
-      <div id="incidents-map"></div>
-      {% else %}
-      <p class="map-empty">No mappable incident coordinates found in the current feed.</p>
-      {% endif %}
+  <div class="page-shell">
+    <section class="brand-banner">
+      <div class="brand-lockup">
+        <img class="brand-badge" src="/static/images.png" alt="California Highway Patrol badge">
+        <div class="brand-copy">
+          <p class="eyebrow">California Highway Patrol</p>
+          <h1>San Diego border incidents</h1>
+        </div>
+      </div>
     </section>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Details</th>
-          <th>Location</th>
-          <th>Time</th>
-          <th>Area</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="group-row">
-          <td colspan="4">Traffic collisions</td>
-        </tr>
-        {% for i in incidents %}
-        {% set incident_type_text = (i.type_display or i.type or "")|lower %}
-        {% if "traffic collision" in incident_type_text %}
-        <tr>
-          <td data-label="Details"><a class="details-btn {{ 'details-btn-traffic' if 'traffic collision' in incident_type_text else 'details-btn-other' }}" href="/incident/{{ i.id }}">Open Details</a></td>
-          <td data-label="Location">
-            <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
-            <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
-            <p class="incident-preview">{{ i.feed_preview }}</p>
-          </td>
-          <td data-label="Time">{{ i.time }}</td>
-          <td data-label="Area">{{ i.area }}</td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-        <tr class="group-row">
-          <td colspan="4">Others</td>
-        </tr>
-        {% for i in incidents %}
-        {% set incident_type_text = (i.type_display or i.type or "")|lower %}
-        {% if "traffic collision" not in incident_type_text %}
-        <tr>
-          <td data-label="Details"><a class="details-btn {{ 'details-btn-traffic' if 'traffic collision' in incident_type_text else 'details-btn-other' }}" href="/incident/{{ i.id }}">Open Details</a></td>
-          <td data-label="Location">
-            <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
-            <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
-            <p class="incident-preview">{{ i.feed_preview }}</p>
-          </td>
-          <td data-label="Time">{{ i.time }}</td>
-          <td data-label="Area">{{ i.area }}</td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-      </tbody>
-    </table>
+    <section class="hero">
+      <div class="hero-metrics">
+        <div class="metric-card">
+          <p class="metric-label">Total incidents</p>
+          <p class="metric-value">{{ count }}</p>
+        </div>
+        <div class="metric-card">
+          <p class="metric-label">Traffic collisions</p>
+          <p class="metric-value red">{{ traffic_count }}</p>
+        </div>
+        <div class="metric-card">
+          <p class="metric-label">Other incidents</p>
+          <p class="metric-value green">{{ other_count }}</p>
+        </div>
+        <div class="metric-card">
+          <p class="metric-label">Map points</p>
+          <p class="metric-value">{{ map_count }}</p>
+        </div>
+      </div>
+      <div class="meta-row">
+        <div class="status-pill {{ 'status-pill-on' if ai_enabled else 'status-pill-off' }}">
+          {{ 'Live AI interpretation on open incident' if ai_enabled else 'AI interpretation unavailable' }}
+        </div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-header">
+        <div>
+          <h2>Incident Map</h2>
+          <p class="section-subtitle">Hover a marker to open the summary card.</p>
+        </div>
+        <div class="map-legend">
+          <span class="legend-chip red">Traffic collision</span>
+          <span class="legend-chip green">Other incident</span>
+          <span class="legend-chip gray">San Diego feed</span>
+        </div>
+      </div>
+      <div class="map-body">
+        <section class="map-wrap">
+          {% if map_incidents %}
+          <div id="incidents-map"></div>
+          {% else %}
+          <p class="map-empty">No mappable incident coordinates found in the current feed.</p>
+          {% endif %}
+        </section>
+      </div>
+    </section>
+
+    <section class="section-card board-wrap">
+      <div class="section-header">
+        <div>
+          <h2>Incident Board</h2>
+          <p class="section-subtitle">Summary appears beneath each incident row.</p>
+        </div>
+        <div class="map-legend">
+          <span class="legend-chip red">Red = traffic collision</span>
+          <span class="legend-chip green">Green = other incident</span>
+        </div>
+      </div>
+      <table class="incident-board">
+        <thead>
+          <tr>
+            <th>Details</th>
+            <th>Location</th>
+            <th>Time</th>
+            <th>Area</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group-row">
+            <td colspan="4">Traffic collisions</td>
+          </tr>
+          {% for i in incidents %}
+          {% if i.is_traffic_collision %}
+          <tr class="incident-row row-traffic">
+            <td data-label="Details"><a class="details-btn details-btn-traffic" href="/incident/{{ i.id }}">Open Details</a></td>
+            <td data-label="Location">
+              <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
+              <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
+              <p class="incident-preview"><strong>Summary:</strong> {{ i.feed_preview }}</p>
+            </td>
+            <td data-label="Time">{{ i.time }}</td>
+            <td data-label="Area">{{ i.area }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+          <tr class="group-row">
+            <td colspan="4">Others</td>
+          </tr>
+          {% for i in incidents %}
+          {% if not i.is_traffic_collision %}
+          <tr class="incident-row row-other">
+            <td data-label="Details"><a class="details-btn details-btn-other" href="/incident/{{ i.id }}">Open Details</a></td>
+            <td data-label="Location">
+              <h1 class="incident-line">{{ i.type_display or "Unknown" }}</h1>
+              <h1 class="incident-line">{{ i.location or "Unknown location" }}</h1>
+              <p class="incident-preview"><strong>Summary:</strong> {{ i.feed_preview }}</p>
+            </td>
+            <td data-label="Time">{{ i.time }}</td>
+            <td data-label="Area">{{ i.area }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
   </div>
   <div class="loading-overlay" id="incident-loading-overlay" aria-hidden="true">
     <div class="loading-indicator">
@@ -440,8 +734,7 @@
       map.setView([32.9, -117.1], 9);
 
       mapPoints.forEach((p) => {
-        const incidentType = (p.type || "").toLowerCase();
-        const isTrafficCollision = incidentType.includes("traffic collision");
+        const isTrafficCollision = !!p.is_traffic_collision;
         const markerColor = isTrafficCollision ? "#d40000" : "#0b7a2f";
         const popupButtonClass = isTrafficCollision ? "popup-btn-traffic" : "popup-btn-other";
         const ll = [p.lat, p.lon];

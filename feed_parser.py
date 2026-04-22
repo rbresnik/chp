@@ -1,7 +1,9 @@
+import logging
 import requests
 import xml.etree.ElementTree as ET
 
 FEED_URL = "https://media.chp.ca.gov/sa_xml/sa.xml"
+logger = logging.getLogger(__name__)
 
 
 def _clean_text(value):
@@ -129,10 +131,14 @@ def _parse_current_logs(root):
 
 
 def get_border_incidents():
-    r = requests.get(FEED_URL, timeout=10)
-    r.raise_for_status()
+    try:
+        r = requests.get(FEED_URL, timeout=10)
+        r.raise_for_status()
+        root = ET.fromstring(r.content)
+    except (requests.RequestException, ET.ParseError) as exc:
+        logger.warning("Unable to load CHP feed: %s", exc)
+        return []
 
-    root = ET.fromstring(r.content)
     incidents = _parse_current_logs(root)
     if incidents:
         return incidents
